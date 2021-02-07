@@ -1,7 +1,11 @@
 const config = require ('./config')
 const ccxt = require ('ccxt')
 const bitflyer = new ccxt.bitflyer (config)
-const print = console.log
+const print = function(str) {
+    let date = new Date();
+    let time = date.toLocaleString()
+    console.log("(" + MARKET_SYMBOL + ") " + "[" + time + "]  " + str)
+}
 const sleep = (timer) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -11,15 +15,16 @@ const sleep = (timer) => {
 }
 
 const IS_TEST_MODE = true
-const UPDATE_INVERVAL_SEC = 10
+const UPDATE_INVERVAL_SEC = 30
 const ODER_SIZE_BTC = 0.01
+const MARKET_SYMBOL = "FX_BTC_JPY"
 
 var log = []
 var lastBuyOrder = null
 var totalBenefit = 0
 
 async function fetchValue() {
-    const result = await bitflyer.fetchTicker('FX_BTC_JPY')
+    const result = await bitflyer.fetchTicker(MARKET_SYMBOL)
     return result.last
 }
 
@@ -27,7 +32,7 @@ async function createBuyOrder(size) {
     if (IS_TEST_MODE) {
         lastBuyOrder = log[2] * ODER_SIZE_BTC
     } else {
-        lastBuyOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
+        lastBuyOrder = await bitflyer.createMarketSellOrder(MARKET_SYMBOL, size);
     }
     print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + lastBuyOrder + "yen🥶")
 }
@@ -37,7 +42,7 @@ async function createSellOrder(size) {
     if (IS_TEST_MODE) {
         sellOrder = log[2] * ODER_SIZE_BTC
     } else {
-        sellOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
+        sellOrder = await bitflyer.createMarketSellOrder(MARKET_SYMBOL, size);
     }
 
     // ORDEER REPORT
