@@ -40,15 +40,18 @@ async function createSellOrder(size) {
         sellOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
     }
 
+    // ORDEER REPORT
     let benefit = (sellOrder - lastBuyOrder)
     totalBenefit += benefit
     print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + sellOrder + "yen🔥")
 
+    // DIFF REPORT
     var icon = benefit > 0 ? "😆" : "🥵"
     print(icon + " diff: " + benefit + "yen " + icon)
     var totalIcon = totalBenefit > 0 ? "⭕" : "❌"
     print("📊 total: " + totalBenefit + "yen " + totalIcon)
 
+    // CLEAR
     lastBuyOrder = null
 }
 
