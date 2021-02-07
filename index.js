@@ -11,8 +11,8 @@ const sleep = (timer) => {
 }
 
 const IS_TEST_MODE = true
-const UPDATE_INVERVAL_SEC = 30
-const ODER_SIZE_BTC = 0.01;
+const UPDATE_INVERVAL_SEC = 10
+const ODER_SIZE_BTC = 0.01
 
 var log = []
 var lastBuyOrder = null
@@ -23,29 +23,33 @@ async function fetchValue() {
     return result.last
 }
 
+async function createBuyOrder(size) {
+    if (IS_TEST_MODE) {
+        lastBuyOrder = log[2] * ODER_SIZE_BTC
+    } else {
+        lastBuyOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
+    }
+    print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + lastBuyOrder + "yen🥶")
+}
+
 async function createSellOrder(size) {
     var sellOrder
     if (IS_TEST_MODE) {
-        sellOrder = log[2]
+        sellOrder = log[2] * ODER_SIZE_BTC
     } else {
         sellOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
     }
 
-    let benefit = (sellOrder - lastBuyOrder) * ODER_SIZE_BTC
+    let benefit = (sellOrder - lastBuyOrder)
     totalBenefit += benefit
-    print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + sellOrder)
-    print("😆 benefit: " + benefit + "yen   totalBenefit: " + totalBenefit + "yen")
+    print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + sellOrder + "yen🔥")
+
+    var icon = benefit > 0 ? "😆" : "🥵"
+    print(icon + " diff: " + benefit + "yen " + icon)
+    var totalIcon = totalBenefit > 0 ? "⭕" : "❌"
+    print("📊 total: " + totalBenefit + "yen " + totalIcon)
 
     lastBuyOrder = null
-}
-
-async function createBuyOrder(size) {
-    if (IS_TEST_MODE) {
-        lastBuyOrder = log[2]
-    } else {
-        lastBuyOrder = await bitflyer.createMarketSellOrder("FX_BTC_JPY", size);
-    }
-    print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + lastBuyOrder)
 }
 
 async function updateLog() {
