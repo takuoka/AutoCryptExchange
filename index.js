@@ -49,9 +49,7 @@ async function createSellOrder(size) {
     let orderPrice = currentPrice * size
 
     var sellOrder
-    if (IS_TEST_MODE) {
-        sellOrder = log[2] * ODER_SIZE_BTC
-    } else {
+    if (!IS_TEST_MODE) {
         sellOrder = await bitflyer.createMarketSellOrder(MARKET_SYMBOL, size);
     }
 
