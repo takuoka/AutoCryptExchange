@@ -38,8 +38,8 @@ async function createBuyOrder(size) {
             print(error)
             return      
         }
-        position = orderPrice
     }
+    position = orderPrice
     print("🛍 " + orderPrice + "yen")
     console.log(position)
 }
