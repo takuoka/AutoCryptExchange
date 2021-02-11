@@ -40,7 +40,7 @@ async function createBuyOrder(size) {
         }
         position = orderPrice
     }
-    print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + orderPrice + "yen🥶")
+    print("🛍 " + orderPrice + "yen")
     console.log(position)
 }
 
@@ -56,14 +56,13 @@ async function createSellOrder(size) {
     // ORDEER REPORT
     let benefit = (orderPrice - position)
     totalBenefit += benefit
-    print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + orderPrice + "yen🔥")
+    print("💰 " + orderPrice + "yen")
     console.log(sellOrder)
 
     // DIFF REPORT
-    var icon = benefit > 0 ? "😆" : "🥵"
-    print(icon + " diff: " + benefit + "yen " + icon)
-    var totalIcon = totalBenefit > 0 ? "⭕" : "❌"
-    print("📊 total: " + totalBenefit + "yen " + totalIcon)
+    var icon = benefit > 0 ? "😆" : "😰"
+    print("---- " + icon + " diff: " + benefit + "yen " + icon + " ----")
+    print("---- 📊 total: " + totalBenefit + "yen ----")
 
     // CLEAR
     position = null
@@ -75,7 +74,7 @@ async function updateLog() {
     if (log.length > 3) {
         log.shift()
     }
-    print(value + " yen " + (isUp() ? "🔼" : "🔻") + "  (orderSize: " + ODER_SIZE_BTC * value + "yen)")
+    // print(value + " yen " + (isUp() ? "🔼" : "🔻") + "  (orderSize: " + ODER_SIZE_BTC * value + "yen)")
 }
 
 function isDownTrend() {
