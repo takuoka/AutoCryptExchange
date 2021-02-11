@@ -20,7 +20,7 @@ const ODER_SIZE_BTC = 0.01
 const MARKET_SYMBOL = "FX_BTC_JPY"
 
 var log = []
-var lastBuyOrder = null
+var position = null
 var totalBenefit = 0
 
 async function fetchValue() {
@@ -29,15 +29,25 @@ async function fetchValue() {
 }
 
 async function createBuyOrder(size) {
-    if (IS_TEST_MODE) {
-        lastBuyOrder = log[2] * ODER_SIZE_BTC
-    } else {
-        lastBuyOrder = await bitflyer.createMarketSellOrder(MARKET_SYMBOL, size);
+    let currentPrice = log[2]
+    let orderPrice = currentPrice * size
+    if (!IS_TEST_MODE) {
+        try {
+            await bitflyer.createMarketBuyOrder(MARKET_SYMBOL, size);            
+        } catch (error) {
+            print(error)
+            return      
+        }
+        position = orderPrice
     }
-    print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + lastBuyOrder + "yen🥶")
+    print((IS_TEST_MODE ? "[TEST] " : "") + "🛍 Created Buy Order: " + orderPrice + "yen🥶")
+    console.log(position)
 }
 
 async function createSellOrder(size) {
+    let currentPrice = log[2]
+    let orderPrice = currentPrice * size
+
     var sellOrder
     if (IS_TEST_MODE) {
         sellOrder = log[2] * ODER_SIZE_BTC
@@ -46,9 +56,10 @@ async function createSellOrder(size) {
     }
 
     // ORDEER REPORT
-    let benefit = (sellOrder - lastBuyOrder)
+    let benefit = (orderPrice - position)
     totalBenefit += benefit
-    print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + sellOrder + "yen🔥")
+    print((IS_TEST_MODE ? "[TEST] " : "") + "💰 Created Sell Order: " + orderPrice + "yen🔥")
+    console.log(sellOrder)
 
     // DIFF REPORT
     var icon = benefit > 0 ? "😆" : "🥵"
@@ -57,7 +68,7 @@ async function createSellOrder(size) {
     print("📊 total: " + totalBenefit + "yen " + totalIcon)
 
     // CLEAR
-    lastBuyOrder = null
+    position = null
 }
 
 async function updateLog() {
@@ -88,13 +99,13 @@ function isUp() {
 
         await updateLog()
 
-        if (lastBuyOrder) {
+        if (position) {
             if (isUpTrend()) {
-                await createSellOrder()
+                await createSellOrder(ODER_SIZE_BTC)
             }    
         } else {
             if (isDownTrend()) {
-                await createBuyOrder()
+                await createBuyOrder(ODER_SIZE_BTC)
             }    
         }
 
